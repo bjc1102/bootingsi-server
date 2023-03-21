@@ -9,12 +9,13 @@ import {
   UseGuards,
   Delete,
   Param,
-  Put,
+  Body,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { User } from 'src/database/User.entity';
 import { UserDecorator } from 'src/types/user.decorator';
 import { SiteService } from './site.service';
+import { ClipRequestBodyDto } from './dto/ClipRequestBody.dto';
 
 // api/sites
 @Controller('/sites')
@@ -23,9 +24,13 @@ export class SiteController {
 
   @Post('set/clip')
   @UseGuards(AuthGuard('jwt'))
-  async setOpenGraphClip(@Req() req: Request, @UserDecorator() userInfo: User) {
+  async setOpenGraphClip(
+    @Req() req: Request,
+    @UserDecorator() userInfo: User,
+    @Body() requestBody: ClipRequestBodyDto,
+  ) {
     const { id, email } = userInfo;
-    const siteURL = req.body.siteURL;
+    const siteURL = requestBody.siteURL;
   }
 
   @Get('get/clips')
