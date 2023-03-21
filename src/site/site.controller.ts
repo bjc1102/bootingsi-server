@@ -25,27 +25,7 @@ export class SiteController {
   @UseGuards(AuthGuard('jwt'))
   async setOpenGraphClip(@Req() req: Request, @UserDecorator() userInfo: User) {
     const { id, email } = userInfo;
-    //@ts-ignore
     const siteURL = req.body.siteURL;
-
-    try {
-      if (!siteURL) throw new Error('url 정보가 없습니다.');
-      const { ogData } = await this.siteService.fetchOpenGraphData(siteURL);
-      if (ogData.success) {
-        const saveResult = await this.siteService.saveUserOpenGraphData(
-          ogData,
-          siteURL,
-          {
-            id,
-            email,
-          },
-        );
-
-        return saveResult;
-      }
-    } catch (error) {
-      if (error) throw new HttpException(error.message, HttpStatus.NOT_FOUND);
-    }
   }
 
   @Get('get/clips')
