@@ -4,6 +4,7 @@ import * as ogs from 'open-graph-scraper';
 import { Site } from 'src/database/Site.entity';
 import { User } from 'src/database/User.entity';
 import OpenGraphType from 'src/types/open-graph';
+import { UserService } from 'src/user/user.service';
 import { Repository } from 'typeorm';
 
 @Injectable()
@@ -11,6 +12,7 @@ export class SiteService {
   constructor(
     @InjectRepository(Site)
     private readonly siteRepository: Repository<Site>,
+    private readonly userService: UserService,
   ) {}
 
   async fetchOpenGraphData(url): Promise<OpenGraphType> {

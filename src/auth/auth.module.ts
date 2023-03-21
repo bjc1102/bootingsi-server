@@ -7,9 +7,10 @@ import { AuthService } from './auth.service';
 import { JwtModule } from '@nestjs/jwt';
 import { AtStrategy } from './utils/TokenStrategy';
 import { RtStrategy } from './utils/RTokenStrategy';
+import { UserModule } from 'src/user/user.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User]), JwtModule.register({})],
+  imports: [UserModule, JwtModule.register({})],
   controllers: [AuthController],
   providers: [GoogleStrategy, AtStrategy, RtStrategy, AuthService],
 })

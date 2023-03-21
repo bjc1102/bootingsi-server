@@ -1,31 +1,27 @@
 import { Injectable } from '@nestjs/common';
 import { JwtPayload, UserDetails } from 'src/utils/types';
-import { Repository } from 'typeorm';
-import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/database/User.entity';
 import { JwtService } from '@nestjs/jwt';
 import { pbkdf2Sync } from 'crypto';
 import { ConfigService } from '@nestjs/config';
+import { UserService } from 'src/user/user.service';
 
 @Injectable()
 export class AuthService {
   constructor(
-    @InjectRepository(User) private readonly userRepository: Repository<User>,
+    private readonly userService: UserService,
     private readonly configService: ConfigService,
     private readonly jwtService: JwtService,
   ) {}
   async validateUser(googleUser: UserDetails) {
     //실제 유저를 찾아옴
-    const user = await this.userRepository.findOneBy({
-      email: googleUser.email,
-    });
+    const user = this.userService.findOneUser({ email: googleUser.email });
 
     if (user) {
-      await this.userRepository.save({
-        ...user,
+      //구글이미지 업데이트
+      return this.userService.updateUserProperties((await user).id, {
         imageUrl: googleUser.imageUrl,
       });
-      return user;
     }
 
     const api_key = pbkdf2Sync(
@@ -36,13 +32,14 @@ export class AuthService {
       'sha512',
     ).toString('base64');
 
-    const newUser = this.userRepository.create({
+    const userInfo = {
       email: googleUser.email,
       Name: googleUser.name,
       imageUrl: googleUser.imageUrl,
       api_key,
-    });
-    return await this.userRepository.save(newUser);
+    };
+
+    return this.userService.createUser(userInfo);
   }
 
   getToken(payload: JwtPayload) {
@@ -59,22 +56,21 @@ export class AuthService {
   }
 
   async findByRefreshToken(email: string, refresh_token: string) {
-    const user = await this.userRepository.findOne({
-      where: {
-        email,
-        refresh_token,
-      },
+    const user = await this.userService.findOneUser({
+      email,
+      refresh_token,
     });
 
     return user;
   }
 
   async updateRefreshToken(user: User, refresh_token: string) {
-    user.refresh_token = refresh_token;
-    return await this.userRepository.save(user);
+    return await this.userService.updateUserProperties(user.id, {
+      refresh_token,
+    });
   }
 
   async findUser(id: number, email: string) {
-    return await this.userRepository.findOne({ where: { id, email } });
+    return await this.userService.findOneUser({ id, email });
   }
 }
