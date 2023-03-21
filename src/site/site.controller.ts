@@ -96,21 +96,4 @@ export class SiteController {
       throw new HttpException(error.message, HttpStatus.FORBIDDEN);
     }
   }
-
-  @Put('update/mark/:id')
-  @UseGuards(AuthGuard('jwt'))
-  async markUserClipData(
-    @Param('id') clipId: number,
-    @UserDecorator() userInfo: User,
-  ) {
-    try {
-      const result = await this.siteService.markClipData(clipId, userInfo);
-      if (result.affected === 1) return { id: clipId };
-      if (result.affected === 0)
-        throw new Error('클립 정보를 찾을 수 없습니다.');
-      throw new Error('업데이트 중 에러가 발생했습니다.');
-    } catch (error) {
-      throw new HttpException(error.message, HttpStatus.FORBIDDEN);
-    }
-  }
 }
