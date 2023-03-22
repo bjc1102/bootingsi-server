@@ -16,12 +16,14 @@ export class AuthService {
   ) {}
   async validateUser(googleUser: UserAuthInterface) {
     //실제 유저를 찾아옴
-    const user = this.userService.findOneUser({ email: googleUser.email });
+    const user = await this.userService.findOneUser({
+      email: googleUser.email,
+    });
 
     if (user) {
       //구글이미지 업데이트
       return this.userService.updateUserProperties(
-        { id: (await user).id, email: (await user).email },
+        { id: user.id, email: user.email },
         {
           imageUrl: googleUser.imageUrl,
         },
