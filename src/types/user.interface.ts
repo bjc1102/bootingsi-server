@@ -1,3 +1,11 @@
+export default interface UserAuthInterface {
+  provider: 'google';
+  providerId: string;
+  name: string;
+  imageUrl: string;
+  email: string;
+}
+
 export type UserDetails = {
   provider: 'google';
   providerId: any;
@@ -10,10 +18,4 @@ export type UserDetails = {
   // providerId: id,
   // name: displayName,
   // email: emails[0].value,
-};
-
-export type JwtPayload = {
-  id: number;
-  email: string;
-  refreshToken?: string;
 };

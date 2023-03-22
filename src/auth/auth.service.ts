@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { JwtPayload, UserDetails } from 'src/utils/types';
+import { JwtPayload } from 'src/types/jwt.interface';
+import UserAuthInterface from 'src/types/user.interface';
 import { User } from 'src/database/User.entity';
 import { JwtService } from '@nestjs/jwt';
 import { pbkdf2Sync } from 'crypto';
@@ -13,7 +14,7 @@ export class AuthService {
     private readonly configService: ConfigService,
     private readonly jwtService: JwtService,
   ) {}
-  async validateUser(googleUser: UserDetails) {
+  async validateUser(googleUser: UserAuthInterface) {
     //실제 유저를 찾아옴
     const user = this.userService.findOneUser({ email: googleUser.email });
 

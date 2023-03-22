@@ -13,7 +13,7 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { User } from 'src/database/User.entity';
-import { UserDecorator } from 'src/types/user.decorator';
+import { UserDecorator } from 'src/utils/user.decorator';
 import { SiteService } from './site.service';
 import { ClipRequestBodyDto } from './dto/ClipRequestBody.dto';
 import { UserService } from 'src/user/user.service';

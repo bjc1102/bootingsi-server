@@ -4,10 +4,11 @@ import { ConfigService } from '@nestjs/config';
 import { AuthGuard } from '@nestjs/passport';
 import { Response } from 'express';
 import { User } from 'src/database/User.entity';
-import { UserDecorator } from 'src/types/user.decorator';
-import { JwtPayload, UserDetails } from 'src/utils/types';
+import { UserDecorator } from 'src/utils/user.decorator';
+import { JwtPayload } from 'src/types/jwt.interface';
 import { AuthService } from './auth.service';
 import cookieCommonOptions from './static/cookie-option';
+import UserAuthInterface from 'src/types/user.interface';
 
 @Controller('/auth')
 export class AuthController {
@@ -26,11 +27,11 @@ export class AuthController {
   // api/auth/google/redirect
   @Get('google/redirect')
   @UseGuards(AuthGuard('google'))
-  async handleRedirect(@Res() res: Response, @UserDecorator() userInfo: User) {
-    //@ts-ignore
-    const user = await this.AuthService.validateUser({
-      ...userInfo,
-    } as UserDetails);
+  async handleRedirect(
+    @Res() res: Response,
+    @UserDecorator() userInfo: UserAuthInterface,
+  ) {
+    const user = await this.authService.validateUser(userInfo);
 
     //유저 정보로 jwt 토큰 생성하기
     const payload: JwtPayload = {
