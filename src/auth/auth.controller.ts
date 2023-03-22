@@ -12,7 +12,7 @@ import cookieCommonOptions from './static/cookie-option';
 @Controller('/auth')
 export class AuthController {
   constructor(
-    private readonly AuthService: AuthService,
+    private readonly authService: AuthService,
     private readonly configService: ConfigService,
   ) {}
 
@@ -38,8 +38,8 @@ export class AuthController {
       email: user.email,
     };
 
-    const { accessToken, refreshToken } = this.AuthService.getToken(payload);
-    await this.AuthService.updateRefreshToken(user, refreshToken);
+    const { accessToken, refreshToken } = this.authService.getToken(payload);
+    await this.authService.updateRefreshToken(user, refreshToken);
 
     res.cookie('access-token', accessToken, {
       ...cookieCommonOptions('token'),
@@ -62,11 +62,11 @@ export class AuthController {
     const { refreshToken, email } = userInfo as JwtPayload;
 
     // refresh_token과 이메일을 활용해 user 검사
-    const user = await this.AuthService.findByRefreshToken(email, refreshToken);
+    const user = await this.authService.findByRefreshToken(email, refreshToken);
     // 새로운 token 발급
-    const token = this.AuthService.getToken({ id: user.id, email: user.email });
+    const token = this.authService.getToken({ id: user.id, email: user.email });
     // refreshToken 업데이트
-    await this.AuthService.updateRefreshToken(user, token.refreshToken);
+    await this.authService.updateRefreshToken(user, token.refreshToken);
 
     response.cookie('access-token', token.accessToken, {
       ...cookieCommonOptions('token'),
@@ -86,7 +86,7 @@ export class AuthController {
       email: userEmail,
       imageUrl,
       Name: name,
-    } = await this.AuthService.findUser(id, email);
+    } = await this.authService.findUser(id, email);
 
     return { userEmail, imageUrl, name };
   }
