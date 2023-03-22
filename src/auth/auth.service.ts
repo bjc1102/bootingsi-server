@@ -19,9 +19,12 @@ export class AuthService {
 
     if (user) {
       //구글이미지 업데이트
-      return this.userService.updateUserProperties((await user).id, {
-        imageUrl: googleUser.imageUrl,
-      });
+      return this.userService.updateUserProperties(
+        { id: (await user).id, email: (await user).email },
+        {
+          imageUrl: googleUser.imageUrl,
+        },
+      );
     }
 
     const api_key = pbkdf2Sync(
@@ -65,9 +68,12 @@ export class AuthService {
   }
 
   async updateRefreshToken(user: User, refresh_token: string) {
-    return await this.userService.updateUserProperties(user.id, {
-      refresh_token,
-    });
+    return await this.userService.updateUserProperties(
+      { id: user.id, email: user.email },
+      {
+        refresh_token,
+      },
+    );
   }
 
   async findUser(id: number, email: string) {

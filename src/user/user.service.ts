@@ -10,9 +10,12 @@ export class UserService {
     private readonly userRepository: Repository<User>,
   ) {}
 
-  async updateUserProperties(userId: number, updateDto: Partial<User>) {
-    await this.userRepository.update(userId, updateDto);
-    return await this.userRepository.findOneBy({ id: userId });
+  async updateUserProperties(
+    userInfo: Pick<User, 'id' | 'email'>,
+    updateDto: Partial<User>,
+  ) {
+    await this.userRepository.update(userInfo, updateDto);
+    return await this.userRepository.findOneBy(userInfo);
   }
 
   async createUser(userDto: Omit<User, 'id' | 'refresh_token' | 'Sites'>) {
