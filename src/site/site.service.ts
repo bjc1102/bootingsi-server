@@ -3,8 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import * as ogs from 'open-graph-scraper';
 import { Site } from 'src/database/Site.entity';
 import { User } from 'src/database/User.entity';
-import OpenGraphType from 'src/types/open-graph';
-import { UserService } from 'src/user/user.service';
+import { OpenGraphType } from 'src/types/open-graph';
 import { Repository } from 'typeorm';
 
 @Injectable()
@@ -12,10 +11,9 @@ export class SiteService {
   constructor(
     @InjectRepository(Site)
     private readonly siteRepository: Repository<Site>,
-    private readonly userService: UserService,
   ) {}
 
-  async fetchOpenGraphData(url): Promise<OpenGraphType> {
+  async fetchOpenGraphData(url: string): Promise<OpenGraphType> {
     const options = { url };
 
     try {
@@ -26,21 +24,40 @@ export class SiteService {
       const ogDescription = result.ogDescription?.trim() || '';
 
       return {
-        url: url,
-        title: ogTitle,
-        image: ogImage,
+        ogUrl: url,
+        ogTitle: ogTitle,
+        ogImage: ogImage,
         favicon: result.favicon.startsWith('https://') && result.favicon,
-        description: ogDescription,
+        ogDescription: ogDescription,
       };
     } catch (error) {
       return {
-        url: url,
-        title: url,
-        image: '',
+        ogUrl: url,
+        ogTitle: url,
+        ogImage: '',
         favicon: '',
-        description: error.result.error,
+        ogDescription: '해당 사이트의 정보는 찾아올 수 없습니다.',
       };
     }
+  }
+
+  async saveUserOpenGraphData(
+    ogData: OpenGraphType,
+    userInfo: Pick<User, 'id' | 'email'>,
+  ) {
+    const OpenGraphObject = {
+      ...ogData,
+      user: {
+        id: userInfo.id,
+        email: userInfo.email,
+      },
+    };
+
+    const createOgData = this.siteRepository.create(OpenGraphObject);
+    const { user, id, ...OpenGraphEntityWithoutUserAndId } =
+      await this.siteRepository.save(createOgData);
+
+    return OpenGraphEntityWithoutUserAndId;
   }
 
   async getUserOpenGraphData(id: number, email: string) {

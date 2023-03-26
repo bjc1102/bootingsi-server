@@ -1,7 +1,6 @@
-export default interface OpenGraphType {
-  url: string;
-  title: string;
-  image: string;
-  favicon: string;
-  description: string;
-}
+import { Site } from 'src/database';
+
+export type OpenGraphType = Pick<
+  Site,
+  'ogTitle' | 'ogDescription' | 'favicon' | 'ogUrl' | 'ogImage'
+>;

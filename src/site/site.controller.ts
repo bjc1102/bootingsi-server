@@ -17,6 +17,7 @@ import { UserDecorator } from 'src/utils/user.decorator';
 import { SiteService } from './site.service';
 import { ClipRequestBodyDto } from './dto/ClipRequestBody.dto';
 import { UserService } from 'src/user/user.service';
+import UserAuthInterface from 'src/types/user.interface';
 
 // api/sites
 @Controller('/sites')
@@ -27,21 +28,23 @@ export class SiteController {
   ) {}
 
   @Post('set/clip')
-  // @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('jwt'))
   async setOpenGraphClip(
     @UserDecorator() userInfo: User,
     @Body() requestBody: ClipRequestBodyDto,
   ) {
     const siteURL = requestBody.siteURL;
     const ogData = await this.siteService.fetchOpenGraphData(siteURL);
+
+    return await this.siteService.saveUserOpenGraphData(ogData, userInfo);
   }
 
   @Get('get/clips')
   @UseGuards(AuthGuard('jwt'))
   async getUserClipList(@UserDecorator() userInfo: User) {
     const { id, email } = userInfo;
-
     const clips = await this.siteService.getUserOpenGraphData(id, email);
+
     return clips;
   }
 

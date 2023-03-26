@@ -5,3 +5,19 @@ export class ClipRequestBodyDto {
   @IsUrl()
   siteURL: string;
 }
+
+export class ExtensionClipRequestBodyDto {
+  @IsString()
+  @IsUrl()
+  siteURL: string;
+
+  @IsString()
+  @IsUrl()
+  favicon: string;
+
+  @IsString()
+  ogTitle: string;
+
+  @IsString()
+  ogDescription: string;
+}

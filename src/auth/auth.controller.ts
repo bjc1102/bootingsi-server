@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-import { Controller, Get, Post, Req, Res, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Res, UseGuards } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AuthGuard } from '@nestjs/passport';
 import { Response } from 'express';
@@ -21,7 +21,7 @@ export class AuthController {
   @Get('google/login')
   @UseGuards(AuthGuard('google'))
   handleLogin() {
-    return { msg: 'Google Authentication' };
+    return { message: 'Google Authentication' };
   }
 
   // api/auth/google/redirect
@@ -42,12 +42,12 @@ export class AuthController {
     const { accessToken, refreshToken } = this.authService.getToken(payload);
     await this.authService.updateRefreshToken(user, refreshToken);
 
-    res.cookie('access-token', accessToken, {
-      ...cookieCommonOptions('token'),
-    });
-    res.cookie('refresh-token', refreshToken, {
-      ...cookieCommonOptions('refresh-token'),
-    });
+    res.cookie('access-token', accessToken, cookieCommonOptions('token'));
+    res.cookie(
+      'refresh-token',
+      refreshToken,
+      cookieCommonOptions('refresh-token'),
+    );
 
     res.redirect(this.configService.get('DOMAIN'));
   }
@@ -56,7 +56,6 @@ export class AuthController {
   @Post('refresh')
   @UseGuards(AuthGuard('jwt-refresh'))
   async refreshToken(
-    @Req() req: Request,
     @Res({ passthrough: true }) response: Response,
     @UserDecorator() userInfo: User,
   ) {
@@ -69,12 +68,16 @@ export class AuthController {
     // refreshToken 업데이트
     await this.authService.updateRefreshToken(user, token.refreshToken);
 
-    response.cookie('access-token', token.accessToken, {
-      ...cookieCommonOptions('token'),
-    });
-    response.cookie('refresh-token', token.refreshToken, {
-      ...cookieCommonOptions('refresh-token'),
-    });
+    response.cookie(
+      'access-token',
+      token.accessToken,
+      cookieCommonOptions('token'),
+    );
+    response.cookie(
+      'refresh-token',
+      token.refreshToken,
+      cookieCommonOptions('refresh-token'),
+    );
 
     response.redirect(this.configService.get('DOMAIN'));
   }
