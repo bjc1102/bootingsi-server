@@ -9,15 +9,15 @@ export class ClipRequestBodyDto {
 export class ExtensionClipRequestBodyDto {
   @IsString()
   @IsUrl()
-  siteURL: string;
+  ogUrl: string;
+
+  @IsString()
+  ogTitle: string;
 
   @IsString()
   @IsUrl()
   favicon: string;
 
   @IsString()
-  ogTitle: string;
-
-  @IsString()
-  ogDescription: string;
+  api_key: string;
 }

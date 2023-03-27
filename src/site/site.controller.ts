@@ -5,7 +5,6 @@ import {
   Post,
   HttpException,
   HttpStatus,
-  Req,
   UseGuards,
   Delete,
   Param,
@@ -15,17 +14,17 @@ import { AuthGuard } from '@nestjs/passport';
 import { User } from 'src/database/User.entity';
 import { UserDecorator } from 'src/utils/user.decorator';
 import { SiteService } from './site.service';
-import { ClipRequestBodyDto } from './dto/ClipRequestBody.dto';
+import {
+  ClipRequestBodyDto,
+  ExtensionClipRequestBodyDto,
+} from './dto/ClipRequestBody.dto';
 import { UserService } from 'src/user/user.service';
 import UserAuthInterface from 'src/types/user.interface';
 
 // api/sites
 @Controller('/sites')
 export class SiteController {
-  constructor(
-    private readonly siteService: SiteService,
-    private readonly userService: UserService,
-  ) {}
+  constructor(private readonly siteService: SiteService) {}
 
   @Post('set/clip')
   @UseGuards(AuthGuard('jwt'))
@@ -49,24 +48,17 @@ export class SiteController {
   }
 
   @Post('set/extension/clip')
-  async setExtensionClip(@Req() req: Request) {
-    // //@ts-ignore
-    // const { api_key, siteURL } = req.body;
-    // try {
-    //   if (!siteURL) throw new Error('url 정보가 없습니다.');
-    //   // const { ogData } = await this.siteService.fetchOpenGraphData(siteURL);
-    //   const user = await this.siteService.findUserByAPI_KEY(api_key);
-    //   if (!user) throw new Error('유저가 없습니다. API 키를 다시 입력해주세요');
-    //   const { ogTitle, ogImage, ogUrl } =
-    //     await this.siteService.saveUserOpenGraphData(ogData, siteURL, user);
-    //   return {
-    //     ogTitle,
-    //     ogImage,
-    //     ogUrl,
-    //   };
-    // } catch (error) {
-    //   throw new HttpException(error.message, HttpStatus.NOT_FOUND);
-    // }
+  async setExtensionClip(@Body() requestBody: ExtensionClipRequestBodyDto) {
+    const { api_key, ...requestOgData } = requestBody;
+
+    const { ogDescription, ogImage } =
+      await this.siteService.fetchOpenGraphData(requestOgData.ogUrl);
+    const userInfo = await this.siteService.getUserInfoByApiKey(api_key);
+
+    return await this.siteService.saveUserOpenGraphData(
+      { ...requestOgData, ogDescription, ogImage },
+      userInfo,
+    );
   }
 
   @Delete('delete/clip/:id')
