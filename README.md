@@ -48,3 +48,54 @@ $ yarn start:prod
 
 $ docker-compose up
 ```
+
+## 파일 구조
+
+```
+.
+├── Dockerfile
+├── README.md
+├── docker-compose.yml
+├── nest-cli.json
+├── nginx
+│   ├── Dockerfile
+│   └── nginx.conf
+├── package.json
+├── src
+│   ├── app.module.ts
+│   ├── auth
+│   │   ├── auth.controller.ts
+│   │   ├── auth.module.ts
+│   │   ├── auth.service.ts
+│   │   ├── static
+│   │   │   └── cookie-option.ts
+│   │   └── utils
+│   │       ├── GoogleStrategy.ts
+│   │       ├── Guards.ts
+│   │       ├── RTokenStrategy.ts
+│   │       └── TokenStrategy.ts
+│   ├── database
+│   │   ├── Site.entity.ts
+│   │   ├── User.entity.ts
+│   │   └── index.ts
+│   ├── main.ts
+│   ├── site
+│   │   ├── dto
+│   │   │   └── ClipRequestBody.dto.ts
+│   │   ├── site.controller.ts
+│   │   ├── site.module.ts
+│   │   └── site.service.ts
+│   ├── types
+│   │   ├── jwt.interface.ts
+│   │   ├── open-graph.ts
+│   │   └── user.interface.ts
+│   ├── user
+│   │   ├── user.module.ts
+│   │   └── user.service.ts
+│   └── utils
+│       ├── getExpires.ts
+│       ├── replaceUndefined.ts
+│       └── user.decorator.ts
+├── tsconfig.json
+└── yarn.lock
+```
